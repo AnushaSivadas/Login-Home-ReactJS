@@ -1,8 +1,9 @@
 import axios from 'axios';
+export const BASE_URL= 'http://localhost:4000'
 
 export const loginUser = async (userData) => {
   try {
-    const response = await axios.post('http://localhost:4000/login', userData, {
+    const response = await axios.post(`${BASE_URL}/login`, userData, {
       withCredentials: true,
     });
     return response.data;
@@ -13,7 +14,7 @@ export const loginUser = async (userData) => {
 
 export const registerUser = async (userData) => {
     try {
-        const response = await axios.post('http://localhost:4000/signup', userData, {
+        const response = await axios.post(`${BASE_URL}/signup`, userData, {
       withCredentials: true,
     });
       return response.data;
@@ -24,7 +25,7 @@ export const registerUser = async (userData) => {
 
   export const googleSigninUser = async (credential) => {
     try {
-        const response = await axios.post('http://localhost:4000/googleSignin', credential, {
+        const response = await axios.post(`${BASE_URL}/googleSignin`, credential, {
       withCredentials: true,
     });
       return response.data;
@@ -35,7 +36,7 @@ export const registerUser = async (userData) => {
 
   export const verifyUserSession = async () => {
     try {
-      const response = await axios.post('http://localhost:4000', {}, {
+      const response = await axios.post(`${BASE_URL}`, {}, {
         withCredentials: true,
       });
       return response.data;

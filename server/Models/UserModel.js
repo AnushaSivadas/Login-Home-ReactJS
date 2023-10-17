@@ -13,9 +13,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
   },
-  googleId: {
-    type: String,
-},
+
   verified:{
     type:Boolean,
     default:false

@@ -27,7 +27,7 @@ module.exports.Signup = async (req, res, next) => {
       token:crypto.randomBytes(32).toString("hex")
     }).save()
 
-    const url = `${process.env.BASE_URL}${user._id}/verify/${token.token}`
+    const url = `${process.env.BASE_URL}/${user._id}/verify/${token.token}`
     await sendEmail(user.email,"Verify Email",url)
     res.status(201)
       .json({ message: "An Email sent to your account please verify", success: true, user });
@@ -40,7 +40,6 @@ module.exports.Signup = async (req, res, next) => {
 module.exports.verifyEmail = async (req, res) => {
 	try {
 		const user = await User.findOne({ _id: req.params.id });
-console.log("user",user)
 		if (!user) return res.status(400).send({ message: "Invalid link" });
 
 		const token = await Token.findOne({
@@ -53,7 +52,7 @@ console.log("user",user)
 		await User.updateOne({ _id: user._id, verified: true });
 		// await token.remove();
 
-		res.status(200).send({ message: "Email verified successfully",success:true });
+		res.status(200).send({ message: "Email verified successfully",success:true ,user});
 	} catch (error) {
 		res.status(500).send({ message: "Internal Server Error" });
 	}
@@ -82,14 +81,13 @@ module.exports.Login = async (req, res, next) => {
 					userId: user._id,
 					token: crypto.randomBytes(32).toString("hex"),
 				}).save();
-				const url = `${process.env.BASE_URL}${user.id}/verify/${token.token}`;
+				const url = `${process.env.BASE_URL}/${user.id}/verify/${token.token}`;
 				await sendEmail(user.email, "Verify Email", url);
 			}      
 			return res
 				.status(201)
 				.json({ message: "An Email sent to your account please verify"});
 		}
-
     const token = createSecretToken(user._id);
     res.cookie("token", token, {
       withCredentials: true,
@@ -106,8 +104,8 @@ module.exports.GoogleSignin = async (req, res, next) => {
   try {
     const { credential } = req.body;
     let decoded = await jwt_decode(credential);
-    const { given_name, family_name, email, sub } = decoded;
-    const user = await User.findOne({ googleId: sub });
+    const { given_name, family_name, email } = decoded;
+    const user = await User.findOne({ email });
     if (user) {
       const token = createSecretToken(user._id);
       res.cookie("token", token, {
@@ -120,7 +118,6 @@ module.exports.GoogleSignin = async (req, res, next) => {
       const user = await User.create({
         email: email,
         username: given_name + " " + family_name,
-        googleId: sub
       });
       const token = createSecretToken(user._id);
       res.cookie("token", token, {
