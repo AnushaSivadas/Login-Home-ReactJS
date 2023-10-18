@@ -1,29 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCookies } from 'react-cookie';
 import './Home.css';
 import { ToastContainer } from 'react-toastify';
 import { checkUserSession } from '../../action/AuthActions';
 
 const Home = () => {
   const navigate = useNavigate();
-  const [cookies, removeCookie] = useCookies([]);
   const [username, setUsername] = useState('');
 
   useEffect(() => {
     const verifyUser = async () => {
-      if (!cookies.token) {
+      const storedToken = localStorage.getItem('profile');
+      if (!storedToken) {
         navigate('/');
         return;
       }
-      await checkUserSession(navigate, setUsername, removeCookie);
+      await checkUserSession(navigate, setUsername, storedToken);
     };
 
     verifyUser();
-  }, [cookies, navigate, removeCookie]);
+  }, [navigate]);
 
   const Logout = () => {
-    removeCookie('token');
+    localStorage.removeItem('profile');
     navigate('/');
   };
 
